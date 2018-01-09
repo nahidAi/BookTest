@@ -10,54 +10,61 @@ import android.view.ViewGroup;
 
 import com.test.booktestnotification.Activity.MainActivity;
 import com.test.booktestnotification.Adapter.AdapterBigPerson;
-import com.test.booktestnotification.Adapter.AdapterFavorite;
+import com.test.booktestnotification.Adapter.AdapterFav;
 
 
-public class PageFragment extends android.support.v4.app.Fragment{
+public class PageFragment extends android.support.v4.app.Fragment {
     RecyclerView recyclerView;
     public int mPage;
-    public static final  String ARG_PAGE = "ARG_PAGE";
+    public static final String ARG_PAGE = "ARG_PAGE";
+    AdapterFav adapterFav;
 
 
-    public static  PageFragment newInstance(int page){
+    public static PageFragment newInstance(int page) {
         Bundle args = new Bundle();
-        args.putInt(ARG_PAGE,page);
+        args.putInt(ARG_PAGE, page);
         PageFragment fragment = new PageFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate( Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPage = getArguments().getInt(ARG_PAGE);
-
 
 
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater,  ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_page,container,false);
-        if (mPage==2){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_page, container, false);
+
+        if (mPage == 2) {
             recyclerView = view.findViewById(R.id.recyclerView);
-            AdapterBigPerson adapterCardView = new AdapterBigPerson(MainActivity.context,DummyData.dataList());
+            AdapterBigPerson adapterCardView = new AdapterBigPerson(MainActivity.context);
             recyclerView.setAdapter(adapterCardView);
             recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.context));
 
         }
-        if (mPage==1){
+        if (mPage == 1) {
             recyclerView = view.findViewById(R.id.recyclerView);
-            AdapterFavorite adapterFavorite = new AdapterFavorite(MainActivity.context,DummyData.dataList());
-            recyclerView.setAdapter(adapterFavorite);
+            adapterFav = new AdapterFav(MainActivity.context);
+            recyclerView.setAdapter(adapterFav);
             recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.context));
 
         }
 
 
-
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adapterFav!=null){
+            adapterFav.notifyDataSetChanged();
+        }
     }
 }

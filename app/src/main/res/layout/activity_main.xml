@@ -28,7 +28,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_gravity="bottom"
-                android:background="#119bf1" />
+                android:background="#119bf1"
+                app:tabTextColor="#d4d2d2"
+                app:tabSelectedTextColor="#fff"/>
 
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -42,4 +44,20 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     </android.support.v4.view.ViewPager>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="20dp"
+        android:id="@+id/floating"
+        android:src="@android:drawable/ic_dialog_email"/>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+       android:layout_centerHorizontal = "true"
+        android:id="@+id/snack_"
+        android:layoutDirection="rtl">
+
+    </android.support.design.widget.CoordinatorLayout>
 </android.support.design.widget.CoordinatorLayout>

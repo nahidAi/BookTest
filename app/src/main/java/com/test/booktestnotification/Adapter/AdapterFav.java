@@ -1,6 +1,5 @@
 package com.test.booktestnotification.Adapter;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -15,12 +14,12 @@ import com.test.booktestnotification.Activity.MainActivity;
 import com.test.booktestnotification.Main2Activity;
 import com.test.booktestnotification.R;
 
-public class AdapterBigPerson extends RecyclerView.Adapter<AdapterBigPerson.myViewHolder> {
+public class AdapterFav extends RecyclerView.Adapter<AdapterFav.myViewHolder> {
     public static Context context;
 
 
 
-    public AdapterBigPerson(Context context) {
+    public AdapterFav(Context context) {
         this.context = context;
 
     }
@@ -33,8 +32,8 @@ public class AdapterBigPerson extends RecyclerView.Adapter<AdapterBigPerson.myVi
 
     @Override
     public void onBindViewHolder(myViewHolder holder, int position) {
-        holder.txt_name.setText(MainActivity.person.get(position).getName());
-        String imgAddress = MainActivity.person.get(position).getImg_adrress();
+        holder.txt_name.setText(MainActivity.favorite.get(position).getName());
+        String imgAddress = MainActivity.favorite.get(position).getImg_adrress();
         int id = MainActivity.context.getResources().getIdentifier(imgAddress,"drawable",MainActivity.context.getPackageName());
         holder.avatar.setImageResource(id);
         holder.layout_item.setId(position);
@@ -44,8 +43,8 @@ public class AdapterBigPerson extends RecyclerView.Adapter<AdapterBigPerson.myVi
                 int position = view.getId();
                 Intent intent = new Intent(MainActivity.context, Main2Activity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra("name","BigPerson");
-                intent.putExtra("id",position + "");
+                intent.putExtra("name","favorite");
+                intent.putExtra("id",position+"");
                 context.startActivity(intent);
 
 
@@ -57,7 +56,7 @@ public class AdapterBigPerson extends RecyclerView.Adapter<AdapterBigPerson.myVi
 
     @Override
     public int getItemCount() {
-        return MainActivity.person.size();
+        return MainActivity.favorite.size();
     }
 
     public class myViewHolder extends RecyclerView.ViewHolder {
@@ -71,7 +70,6 @@ public class AdapterBigPerson extends RecyclerView.Adapter<AdapterBigPerson.myVi
             txt_name = itemView.findViewById(R.id.txt_item);
             avatar = itemView.findViewById(R.id.avatar);
             layout_item = itemView.findViewById(R.id.layout_item);
-
 
 
 
