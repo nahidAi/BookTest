@@ -2,14 +2,14 @@ package com.test.booktestnotification;
 
 
 
-public class Structure {
+public class Quote {
     public String name;
     public String content;
     public String more;
     public String img_adrress;
     public int id;
 
-    public Structure(String name, String content, String more, String img_adrress, int id) {
+    public Quote(String name, String content, String more, String img_adrress, int id) {
         this.name = name;
         this.content = content;
         this.more = more;

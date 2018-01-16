@@ -60,11 +60,7 @@
         android:layoutDirection="rtl">
 
     </android.support.design.widget.CoordinatorLayout>
-    <Button
-    android:id="@+id/showButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text=" نمایش "/>
+
     <Button
         android:id="@+id/showButton2"
         android:layout_width="wrap_content"

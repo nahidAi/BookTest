@@ -26,11 +26,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.test.booktestnotification.Adapter.AdapterFragment;
 import com.test.booktestnotification.Main3Activity;
+import com.test.booktestnotification.Quote;
 import com.test.booktestnotification.R;
-import com.test.booktestnotification.Structure;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,18 +40,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     public static Context context;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ImageView menuToolbar;
-    SQLiteDatabase sqLiteDatabase;
+    SQLiteDatabase database;
     String desPath;
     FloatingActionButton floatingActionButton;
 
-    public static ArrayList<Structure> person = new ArrayList<Structure>();
-    public static ArrayList<Structure> favorite = new ArrayList<Structure>();
+    public static ArrayList<Quote> person = new ArrayList<Quote>();
+    public static ArrayList<Quote> favorite = new ArrayList<Quote>();
+    public static ArrayList<Quote> quoteArrayList = new ArrayList<Quote>();
+
+
     Button showButton;
     Button showButton2;
     Uri path = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -63,12 +68,44 @@ public class MainActivity extends AppCompatActivity {
 
         context = getApplicationContext();
         setTabLayout();
-        setNotification();
 
 
         drawerLayout = findViewById(R.id.navigation_drawer);
         navigationView = findViewById(R.id.navigation_view);
         floatingActionButton = findViewById(R.id.floating);
+        showButton2 = findViewById(R.id.showButton2);
+        showButton2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, Main3Activity.class);
+                Intent intent1 = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://cafebazaar.ir/search/?q=%D8%AB%D8%B1%D9%88%D8%AA+%D8%A8%DB%8C+%D8%A7%D9%86%D8%AA%D9%87%D8%A7+%D8%A8%D8%A7+%DA%A9%D8%B3%D8%A8+%D8%AF%D8%B1%D8%A2%D9%85%D8%AF+24%D8%B3%D8%A7%D8%B9%D8%AA%D9%87&l=fa"));
+
+
+                PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+                PendingIntent pi1 = PendingIntent.getActivity(MainActivity.this, 0, intent1, 0);
+
+
+                Resources r = getResources();
+                Notification notification = new NotificationCompat.Builder(MainActivity.this)
+                        .setTicker("نوتیف")
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText("لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. "))
+                        .setContentTitle("title")
+                        .setSmallIcon(R.drawable.heart)
+                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                                R.drawable.email))
+                        .setContentIntent(pi)
+                        .setAutoCancel(true)
+                        .setSound(path)
+                        .setColor(getResources().getColor(R.color.colorAccent))
+                        // .setNumber(22)
+                        .addAction(R.drawable.heart_outline, "GO to site", pi1)
+                        .addAction(R.drawable.email, "go to activity", pi)
+                        .build();
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.notify(0, notification);
+
+            }
+        });
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,16 +144,16 @@ public class MainActivity extends AppCompatActivity {
 
         selectPerson();
         selectFavorite();
+        //readQuoteFromDatabase();
+        listQuoteAndSendNotif();
 
 
     }
 
 
-
-
     private void selectPerson() {
-        sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(desPath + "/dbs_b_n.sqlite", null);
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM tbl_b_n WHERE sobject = 'person'", null);
+        database = SQLiteDatabase.openOrCreateDatabase(desPath + "/dbs_b_n.sqlite", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM tbl_b_n WHERE sobject = 'person'", null);
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             String content = cursor.getString(cursor.getColumnIndex("content"));
@@ -124,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
             String imageAddress = cursor.getString(cursor.getColumnIndex("img_adrress"));
             int id = cursor.getInt(cursor.getColumnIndex("id"));
 
-            Structure struct = new Structure(name, content, more, imageAddress, id);
+            Quote struct = new Quote(name, content, more, imageAddress, id);
             struct.setName(name);
             struct.setContent(content);
             struct.setMore(more);
@@ -138,8 +175,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void selectFavorite() {
-        sqLiteDatabase = SQLiteDatabase.openOrCreateDatabase(desPath + "/dbs_b_n.sqlite", null);
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM tbl_b_n WHERE fav = 1", null);
+        database = SQLiteDatabase.openOrCreateDatabase(desPath + "/dbs_b_n.sqlite", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM tbl_b_n WHERE fav = 1", null);
         while (cursor.moveToNext()) {
             String name = cursor.getString(cursor.getColumnIndex("name"));
             String content = cursor.getString(cursor.getColumnIndex("content"));
@@ -147,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
             String imageAddress = cursor.getString(cursor.getColumnIndex("img_adrress"));
             int id = cursor.getInt(cursor.getColumnIndex("id"));
 
-            Structure struct = new Structure(name, content, more, imageAddress, id);
+            Quote struct = new Quote(name, content, more, imageAddress, id);
             struct.setName(name);
             struct.setContent(content);
             struct.setMore(more);
@@ -204,59 +241,77 @@ public class MainActivity extends AppCompatActivity {
         outputStream.close();
 
     }
-    private void setNotification() {
-        showButton = findViewById(R.id.showButton);
-        showButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Main3Activity.class);
-                PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-                Resources r = getResources();
-                Notification notification = new NotificationCompat.Builder(MainActivity.this)
-                        .setTicker("نوتیف")
-                        .setContentText(" این یک تست است")
-                        .setContentTitle("title")
-                        .setSmallIcon(R.drawable.heart)
-                        .setContentIntent(pi)
-                        .setAutoCancel(true)
-                        .build();
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(0, notification);
 
-            }
-        });
-        showButton2 = findViewById(R.id.showButton2);
-        showButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, Main3Activity.class);
-                Intent intent1 = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://cafebazaar.ir/search/?q=%D8%AB%D8%B1%D9%88%D8%AA+%D8%A8%DB%8C+%D8%A7%D9%86%D8%AA%D9%87%D8%A7+%D8%A8%D8%A7+%DA%A9%D8%B3%D8%A8+%D8%AF%D8%B1%D8%A2%D9%85%D8%AF+24%D8%B3%D8%A7%D8%B9%D8%AA%D9%87&l=fa"));
+    private void setNotification(Quote quote) {
+        Intent intent = new Intent(MainActivity.this, Main3Activity.class);
+        Intent intent1 = new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://cafebazaar.ir/search/?q=%D8%AB%D8%B1%D9%88%D8%AA+%D8%A8%DB%8C+%D8%A7%D9%86%D8%AA%D9%87%D8%A7+%D8%A8%D8%A7+%DA%A9%D8%B3%D8%A8+%D8%AF%D8%B1%D8%A2%D9%85%D8%AF+24%D8%B3%D8%A7%D8%B9%D8%AA%D9%87&l=fa"));
 
+        PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
+        PendingIntent pi1 = PendingIntent.getActivity(MainActivity.this, 0, intent1, 0);
 
-                PendingIntent pi = PendingIntent.getActivity(MainActivity.this, 0, intent, 0);
-                PendingIntent pi1 = PendingIntent.getActivity(MainActivity.this, 0, intent1, 0);
+        Resources r = getResources();
+        Notification notification = new NotificationCompat.Builder(MainActivity.this)
+                .setTicker("نوتیف")
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(quote.getMore()))
+                .setContentTitle(quote.getName())
+                .setSmallIcon(R.drawable.heart)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
+                        R.drawable.email))
+                .setContentIntent(pi)
+                .setAutoCancel(true)
+                .setSound(path)
+                .setColor(getResources().getColor(R.color.colorAccent))
+                .addAction(R.drawable.heart_outline, "GO to site", pi1)
+                .addAction(R.drawable.email, "go to activity", pi)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, notification);
+
+    }
 
 
-                Resources r = getResources();
-                Notification notification = new NotificationCompat.Builder(MainActivity.this)
-                        .setTicker("نوتیف")
-                        .setStyle(new NotificationCompat.BigTextStyle().bigText("لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی تکنولوژی مورد نیاز و کاربردهای متنوع با هدف بهبود ابزارهای کاربردی می باشد. "))
-                        .setContentTitle("title")
-                        .setSmallIcon(R.drawable.heart)
-                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
-                                R.drawable.email))
-                        .setContentIntent(pi)
-                        .setAutoCancel(true)
-                        .setSound(path)
-                        .setColor(getResources().getColor(R.color.colorAccent))
-                        // .setNumber(22)
-                        .addAction(R.drawable.heart_outline, "GO to site", pi1)
-                        .addAction(R.drawable.email, "go to activity", pi)
-                        .build();
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(0, notification);
+    public void readQuoteFromDatabase() {
+        database = SQLiteDatabase.openOrCreateDatabase(desPath + "/dbs_b_n.sqlite", null);
+        Cursor cursor = database.rawQuery("SELECT * FROM tbl_b_n ", null);
 
-            }
-        });
+        while (cursor.moveToNext()) {
+            String name = cursor.getString(cursor.getColumnIndex("name"));
+            String content = cursor.getString(cursor.getColumnIndex("content"));
+            String more = cursor.getString(cursor.getColumnIndex("more"));
+            String imageAddress = cursor.getString(cursor.getColumnIndex("img_adrress"));
+            int id = cursor.getInt(cursor.getColumnIndex("id"));
+
+            Quote struct = new Quote(name, content, more, imageAddress, id);
+            struct.setName(name);
+            struct.setContent(content);
+            struct.setMore(more);
+            struct.setImg_adrress(imageAddress);
+            struct.setId(id);
+            quoteArrayList.add(struct);
+        }
+        // Toast.makeText(context, "" + quoteArrayList.size(), Toast.LENGTH_SHORT).show();
+
+
+    }
+
+    public void listQuoteAndSendNotif() {
+        readQuoteFromDatabase();
+        int quoteSize = quoteArrayList.size();
+
+
+        Random rand = new Random();
+        int n = rand.nextInt(quoteSize);
+        quoteArrayList.get(n);
+
+
+        Toast.makeText(context, "size is :" + quoteArrayList.size(), Toast.LENGTH_SHORT).show();
+
+
+        Toast.makeText(context, "" + n, Toast.LENGTH_SHORT).show();
+
+
+         setNotification( quoteArrayList.get(n));
+
+
     }
 }
