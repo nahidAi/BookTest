@@ -1,5 +1,6 @@
 package com.test.booktestnotification.Activity;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -29,9 +30,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.test.booktestnotification.Adapter.AdapterFragment;
+import com.test.booktestnotification.G;
 import com.test.booktestnotification.Main3Activity;
 import com.test.booktestnotification.Quote;
 import com.test.booktestnotification.R;
+import com.test.booktestnotification.Task;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<Quote> quoteArrayList = new ArrayList<Quote>();
 
 
-    Button showButton;
+
     Button showButton2;
     Uri path = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -65,6 +69,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.navigation_activity_main);
+
+        Intent intent = new Intent(G.context, Task.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(G.context,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.YEAR,2018);
+        calendar.set(Calendar.MONTH,0);
+        calendar.set(Calendar.DAY_OF_MONTH,18);
+        calendar.set(Calendar.HOUR,10);
+        calendar.set(Calendar.MINUTE,8);
+        calendar.set(Calendar.SECOND,0);
+
+
+
+       // G.alarmManager.set(AlarmManager.RTC_WAKEUP,calendar.getTimeInMillis(),pendingIntent);
+        G.alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 60*1000, pendingIntent);
+
+
+
 
         context = getApplicationContext();
         setTabLayout();
